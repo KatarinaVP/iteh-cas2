@@ -1,4 +1,28 @@
+<?php
+require "dbBroker.php";
+require "model/prijava.php";
 
+session_start();
+
+if(!isset($_SESSION['user_id'])){
+    header('Location:index.php');
+    exit();
+}
+
+$rezultat = Prijava::getAll($conn);
+
+if(!$rezultat){
+    echo "Nastala je greška prilikom izvođenja upitanja <br>";
+    die();
+}
+
+if($rezultat->num_rows==0){
+    echo "Nema prijava na kolokvijume";
+    die();
+}
+else{
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,9 +70,9 @@
             </tr>
             </thead>
             <tbody>
-            <?php
-            while ($red = $result->fetch_array()) {
-                ?>
+          <?php
+          while($red=$rezultat->fetch_array()):
+            ?>
                 <tr>
                     <td><?php echo $red["predmet"] ?></td>
                     <td><?php echo $red["katedra"] ?></td>
@@ -63,8 +87,11 @@
 
                 </tr>
                 <?php
-            }
-            } ?>
+                endwhile;
+
+            } //zatvaranje else-a
+                ?>
+        
             </tbody>
         </table>
         <div class="row" >
@@ -77,7 +104,7 @@
                 <button id="btn-obrisi" class="btn btn-danger" style="background-color: red; border: 1px solid white;">Obrisi</button>
             </div>
 
-            <div class="col-md-2" style="text-align: right>; color:" >
+            <div class="col-md-2" style="text-align: right>; " >
                     <button id="btn-sortiraj" class="btn btn-normal" onclick="sortTable()">Sortiraj</button>
                 </div>
 
